@@ -1,43 +1,83 @@
-# MyToken Smart Contract
+# Error Handling Example
 
-This repository contains the Solidity code for `MyToken`, a simple ERC-20-like token contract. The contract includes basic functionalities for minting, burning, and transferring tokens.
+This Solidity program demonstrates the use of error handling statements `require()`, `assert()`, and `revert()` in a smart contract. The contract manages a simple integer value, ensuring robust error checking and handling.
 
-## Contract Overview
+## Description
 
-The `MyToken` contract provides the following functionalities:
+This program includes a contract that showcases the basic syntax and functionality of error handling in Solidity. It serves as a starting point for developers who want to understand how to use `require()`, `assert()`, and `revert()` statements effectively. The contract includes functions to set, double, and reset an integer value, with appropriate error checks.
 
-1. **Minting Tokens**: Allows the creation of new tokens.
-2. **Burning Tokens**: Allows the destruction of existing tokens.
-3. **Transferring Tokens**: Allows the transfer of tokens from one address to another.
+## Getting Started
 
-## Public Variables
+### Executing program
 
-- `name`: The name of the token (`MyToken`).
-- `symbol`: The symbol of the token (`MTK`).
-- `totalSupply`: The total supply of tokens in circulation.
-- `balances`: A mapping that tracks the balance of each address.
+To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at [Remix](https://remix.ethereum.org/).
 
-## Functions
-
-### `mint`
+Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a `.sol` extension (e.g., `ErrorHandlingExample.sol`). Copy and paste the following code into the file:
 
 ```solidity
-function mint(address to, uint256 amount) public;
-Mints new tokens and assigns them to the specified address.
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-to: The address to receive the minted tokens.
-amount: The number of tokens to mint.
+contract ErrorHandlingExample {
 
-function burn(address from, uint256 amount) public;
-Burns tokens from the specified address.
+    address public owner;
+    uint256 public value;
 
-from: The address from which the tokens will be burned.
-amount: The number of tokens to burn.
+    constructor() {
+        owner = msg.sender; // Setting the contract deployer as the owner
+    }
 
-function transferFrom(address sender, address recipient, uint256 amount) public;
+    // Function to demonstrate the use of require()
+    function setValue(uint256 _value) public {
+        // Check that the sender is the owner
+        require(msg.sender == owner, "Only the owner can set the value");
+        // Check that the value is greater than 0
+        require(_value > 0, "Value must be greater than 0");
 
-Transfers tokens from one address to another.
+        value = _value;
+    }
 
-sender: The address from which the tokens will be sent.
-recipient: The address to receive the tokens.
-amount: The number of tokens to transfer.
+    // Function to demonstrate the use of assert()
+    function doubleValue() public {
+        uint256 newValue = value * 2;
+        // Use assert to ensure no overflow occurs
+        assert(newValue / 2 == value);
+
+        value = newValue;
+    }
+
+    // Function to demonstrate the use of revert()
+    function resetValue() public {
+        // Check that the sender is the owner
+        if (msg.sender != owner) {
+            revert("Only the owner can reset the value");
+        }
+
+        value = 0;
+    }
+}
+
+## How to run
+
+To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.0" (or another compatible version), and then click on the "Compile ErrorHandlingExample.sol" button.
+
+Once the code is compiled, you can deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the ErrorHandlingExample contract from the dropdown menu, and then click on the "Deploy" button.
+
+Once the contract is deployed, you can interact with it by calling the available functions. For example, you can set a value, double it, or reset it.
+
+Functions
+setValue(uint256 _value)
+
+Sets the value if the caller is the owner and _value is greater than 0.
+Uses require to ensure conditions are met.
+Example usage: setValue(10).
+doubleValue()
+
+Doubles the current value.
+Uses assert to ensure no overflow occurs.
+Example usage: doubleValue().
+resetValue()
+
+Resets the value to 0 if the caller is the owner.
+Uses revert to handle unauthorized access.
+Example usage: resetValue().
