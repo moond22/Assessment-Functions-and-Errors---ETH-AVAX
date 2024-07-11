@@ -1,44 +1,41 @@
-pragma solidity 0.8.26;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-contract MyToken {
-    // Public variables
-    string public name = "MyToken";
-    string public symbol = "MTK";
-    uint256 public totalSupply;
+contract ErrorHandlingExample {
 
-    // Mapping to track balances
-    mapping(address => uint256) public balances;
+    address public owner;
+    uint256 public value;
 
-    // Mint function with assert and require
-    function mint(address to, uint256 amount) public {
-        require(to != address(0), "Invalid address");
-        totalSupply += amount;
-        balances[to] += amount;
-        assert(balances[to] >= amount); // Ensure balance update is correct
+    constructor() {
+        owner = msg.sender; // Setting the contract deployer as the owner
     }
 
-    // Burn function with require
-    function burn(address from, uint256 amount) public {
-        require(balances[from] >= amount, "Insufficient balance to burn");
-        require(from != address(0), "Invalid address");
-        require(totalSupply >= amount, "Cannot burn more than total supply");
+    // Function to demonstrate the use of require()
+    function setValue(uint256 _value) public {
+        // Check that the sender is the owner
+        require(msg.sender == owner, "Only the owner can set the value");
+        // Check that the value is greater than 0
+        require(_value > 0, "Value must be greater than 0");
 
-        totalSupply -= amount;
-        balances[from] -= amount;
+        value = _value;
     }
 
-    // Transfer tokens from one address to another
-    function transferFrom(address sender, address recipient, uint256 amount) public {
-        require(sender != address(0), "Invalid sender address");
-        require(recipient != address(0), "Invalid recipient address");
-        require(balances[sender] >= amount, "Insufficient balance");
-        
-        balances[sender] -= amount;
-        balances[recipient] += amount;
+    // Function to demonstrate the use of assert()
+    function doubleValue() public {
+        uint256 newValue = value * 2;
+        // Use assert to ensure no overflow occurs
+        assert(newValue / 2 == value);
 
-        // Simulate a condition where transfer fails and revert
-        if (amount > 100) {
-            revert("Transfer amount exceeds maximum limit of 100 tokens");
+        value = newValue;
+    }
+
+    // Function to demonstrate the use of revert()
+    function resetValue() public {
+        // Check that the sender is the owner
+        if (msg.sender != owner) {
+            revert("Only the owner can reset the value");
         }
+
+        value = 0;
     }
 }
